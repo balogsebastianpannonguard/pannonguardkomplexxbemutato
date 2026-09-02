@@ -894,7 +894,7 @@ function ClosingSlide() {
 
         <div style={{ width: 160, height: 1, background: "linear-gradient(90deg, transparent, rgba(201,162,39,0.47), transparent)", marginTop: "2rem", animation: "fadeIn 1s ease 0.9s both" }} />
         <div style={{ color: "rgba(255,255,255,0.33)", fontSize: "0.95rem", letterSpacing: "0.2em", textTransform: "uppercase", animation: "fadeUp 0.7s ease 1s both" }}>
-          PannonGuard · 2024
+          PannonGuard · 2026
         </div>
       </div>
     </SlideShell>
