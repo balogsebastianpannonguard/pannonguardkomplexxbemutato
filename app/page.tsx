@@ -416,7 +416,7 @@ function HeroSlide() {
 
         {/* Text */}
         <div style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.7rem", letterSpacing: "0.35em", textTransform: "uppercase", marginBottom: "0.75rem", animation: "fadeUp 0.8s ease 0.4s both" }}>
-          Igazgatói Tanács Bemutató · 2024
+          Igazgatói Tanács Bemutató · 2026
         </div>
         <h1 style={{
           fontFamily: "'Playfair Display', serif",
