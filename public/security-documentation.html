@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PannonGuard Komplex – Biztonsági & Üzemeltetési Dokumentáció</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:        #c9a227;
+      --gold-light:  #f0c940;
+      --gold-dim:    rgba(201,162,39,0.18);
+      --navy:        #080e1f;
+      --navy-mid:    #0f1a35;
+      --navy-light:  #162040;
+      --blue-accent: #2d4db8;
+      --white:       #ffffff;
+      --white-60:    rgba(255,255,255,0.60);
+      --white-40:    rgba(255,255,255,0.40);
+      --white-20:    rgba(255,255,255,0.20);
+      --white-08:    rgba(255,255,255,0.08);
+    }
+
+    html, body {
+      background: #f3f4f8;
+      font-family: 'Inter', sans-serif;
+      color: var(--white);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ============================================================
+       SCREEN: Print button
+    ============================================================ */
+    .print-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 9999;
+      background: #1a2540;
+      border-bottom: 1px solid rgba(201,162,39,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 2.5rem;
+      gap: 1rem;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.35);
+    }
+    .print-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .print-bar-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(201,162,39,0.4);
+      object-fit: cover;
+    }
+    .print-bar-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: 0.03em;
+    }
+    .print-bar-sub {
+      font-size: 0.78rem;
+      color: rgba(201,162,39,0.72);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .btn-print {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #c9a227, #f0c940);
+      color: #080e1f;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.6rem;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: opacity 0.2s, transform 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-print:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-print svg { width: 16px; height: 16px; }
+
+    /* ============================================================
+       PAGE WRAPPER
+    ============================================================ */
+    .pages-wrap {
+      padding-top: 72px; /* space for bar */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      padding-bottom: 64px;
+    }
+
+    /* ============================================================
+       SINGLE PAGE
+    ============================================================ */
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      background: var(--navy);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(201,162,39,0.12);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Animated grid background ---- */
+    .page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201,162,39,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,162,39,0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ---- Radial glow ---- */
+    .page::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 90% 55% at 50% 0%, rgba(45,77,184,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 85% 95%, rgba(201,162,39,0.15) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-inner {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============================================================
+       PAGE HEADER
+    ============================================================ */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 2.2rem 1.2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      background: rgba(8,14,31,0.55);
+      backdrop-filter: blur(10px);
+    }
+    .page-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .header-shield {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      border-radius: 50%;
+      border: 1px solid rgba(201,162,39,0.30);
+    }
+    .header-brand {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.80);
+      letter-spacing: 0.05em;
+    }
+    .header-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #080e1f;
+      background: linear-gradient(135deg, #c9a227, #f0c940);
+      border-radius: 5px;
+      padding: 2px 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .page-num {
+      font-size: 0.75rem;
+      color: rgba(201,162,39,0.55);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* ============================================================
+       PAGE FOOTER
+    ============================================================ */
+    .page-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 2.2rem;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      background: rgba(8,14,31,0.45);
+    }
+    .footer-left {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.28);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .footer-right {
+      font-size: 0.68rem;
+      color: rgba(201,162,39,0.45);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    /* ============================================================
+       GOLD DIVIDER
+    ============================================================ */
+    .gold-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,162,39,0.55), transparent);
+      margin: 1.5rem 0;
+    }
+    .gold-divider-short {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, #c9a227, transparent);
+      border-radius: 1px;
+      margin: 0.6rem 0 1rem;
+    }
+
+    /* ============================================================
+       PAGE 1 – COVER
+    ============================================================ */
+    .cover-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 3rem;
+      text-align: center;
+      gap: 0;
+    }
+
+    .cover-rings-wrap {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .cover-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(201,162,39,0.09);
+    }
+
+    .cover-shield-wrap {
+      position: relative;
+      margin-bottom: 1.8rem;
+    }
+    .cover-glow {
+      position: absolute;
+      inset: -40px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,162,39,0.30) 0%, transparent 68%);
+    }
+    .cover-shield-img {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      position: relative;
+      border-radius: 50%;
+      border: 1px solid rgba(201,162,39,0.25);
+      box-shadow: 0 0 48px rgba(201,162,39,0.32);
+    }
+
+    .cover-eyebrow {
+      font-size: 0.72rem;
+      color: rgba(201,162,39,0.75);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-bottom: 0.7rem;
+    }
+    .cover-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.1;
+      margin-bottom: 0.3rem;
+    }
+    .cover-title span {
+      background: linear-gradient(135deg, #f0c940, #c9a227);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .cover-subtitle {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.12em;
+      margin-top: 0.35rem;
+      margin-bottom: 1.4rem;
+    }
+
+    /* Cover badges */
+    .cover-badges {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.6rem;
+    }
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .badge-gold {
+      background: rgba(201,162,39,0.18);
+      border: 1px solid rgba(201,162,39,0.42);
+      color: rgba(201,162,39,0.92);
+    }
+    .badge-blue {
+      background: rgba(45,77,184,0.18);
+      border: 1px solid rgba(45,77,184,0.42);
+      color: rgba(150,180,255,0.88);
+    }
+    .badge-green {
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.35);
+      color: rgba(134,239,172,0.88);
+    }
+
+    /* Cover abstract */
+    .cover-abstract {
+      max-width: 440px;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.50);
+      line-height: 1.75;
+      margin-bottom: 1.8rem;
+    }
+
+    /* Cover info row */
+    .cover-meta-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+      width: 100%;
+      max-width: 520px;
+    }
+    .meta-cell {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 10px;
+      padding: 0.75rem 0.6rem;
+      text-align: center;
+    }
+    .meta-cell-label {
+      font-size: 0.6rem;
+      color: rgba(201,162,39,0.58);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .meta-cell-val {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.78);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    /* ============================================================
+       PAGE 2 – ISO & SECURITY
+    ============================================================ */
+    .content-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.6rem 2.2rem 1rem;
+      gap: 1.1rem;
+    }
+
+    .section-eyebrow {
+      font-size: 0.65rem;
+      color: rgba(201,162,39,0.68);
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.52rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .section-title span {
+      background: linear-gradient(135deg, #f0c940, #c9a227);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Icon cards */
+    .icon-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.65rem;
+    }
+    .icon-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.13);
+      border-top: 2px solid rgba(201,162,39,0.45);
+      border-radius: 12px;
+      padding: 0.9rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .icon-card-icon {
+      font-size: 1.1rem;
+      color: rgba(201,162,39,0.82);
+      margin-bottom: 0.1rem;
+    }
+    .icon-card-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.88);
+      letter-spacing: 0.02em;
+    }
+    .icon-card-desc {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.50);
+      line-height: 1.6;
+    }
+
+    /* Numbered list */
+    .num-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .num-item {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 0.75rem;
+      align-items: start;
+    }
+    .num-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(201,162,39,0.16);
+      border: 1px solid rgba(201,162,39,0.30);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .num-badge span {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f0c940, #c9a227);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .num-content {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-left: 2px solid rgba(201,162,39,0.40);
+      border-radius: 0 10px 10px 0;
+      padding: 0.5rem 0.85rem;
+    }
+    .num-content-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.90);
+      margin-bottom: 0.12rem;
+    }
+    .num-content-desc {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.52);
+      line-height: 1.6;
+    }
+
+    /* Highlight box */
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(201,162,39,0.14), rgba(201,162,39,0.06));
+      border: 1px solid rgba(201,162,39,0.32);
+      border-radius: 12px;
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .highlight-icon {
+      font-size: 1.2rem;
+      color: #c9a227;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .highlight-text {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.7;
+    }
+    .highlight-text strong {
+      color: rgba(201,162,39,0.90);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+       PAGE 3 – DATABASE & OPERATOR
+    ============================================================ */
+    /* DB visual */
+    .db-arch {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0;
+      align-items: center;
+      margin: 0.3rem 0;
+    }
+    .db-box {
+      border-radius: 12px;
+      padding: 0.9rem 0.8rem;
+      border: 1px solid;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.28rem;
+    }
+    .db-box-mongo {
+      background: rgba(52,211,153,0.08);
+      border-color: rgba(52,211,153,0.30);
+    }
+    .db-box-maria {
+      background: rgba(96,165,250,0.08);
+      border-color: rgba(96,165,250,0.30);
+    }
+    .db-box-icon {
+      font-size: 1.3rem;
+    }
+    .db-box-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.88);
+    }
+    .db-box-type {
+      font-size: 0.62rem;
+      color: rgba(255,255,255,0.44);
+      letter-spacing: 0.08em;
+    }
+    .db-box-desc {
+      font-size: 0.63rem;
+      color: rgba(255,255,255,0.40);
+      line-height: 1.5;
+      margin-top: 0.1rem;
+    }
+    .db-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 0 0.5rem;
+    }
+    .db-connector-line {
+      width: 32px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,162,39,0.55), transparent);
+    }
+    .db-connector-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(201,162,39,0.55);
+      border: 1px solid rgba(201,162,39,0.82);
+    }
+
+    /* Server box */
+    .server-box {
+      background: rgba(45,77,184,0.12);
+      border: 1px solid rgba(45,77,184,0.30);
+      border-radius: 12px;
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .server-box-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .server-box-content {}
+    .server-box-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: rgba(150,180,255,0.88);
+      margin-bottom: 0.2rem;
+    }
+    .server-box-desc {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.50);
+      line-height: 1.6;
+    }
+    .server-box-desc strong {
+      color: rgba(150,180,255,0.75);
+    }
+
+    /* Operator profile */
+    .operator-card {
+      background: linear-gradient(135deg, rgba(45,77,184,0.18), rgba(8,14,31,0.7));
+      border: 1px solid rgba(45,77,184,0.35);
+      border-radius: 14px;
+      padding: 1rem 1.2rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: center;
+    }
+    .operator-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(45,77,184,0.35), rgba(8,14,31,0.8));
+      border: 1px solid rgba(201,162,39,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 0 28px rgba(45,77,184,0.22);
+      flex-shrink: 0;
+    }
+    .operator-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.18rem;
+    }
+    .operator-role {
+      font-size: 0.72rem;
+      color: rgba(201,162,39,0.72);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.55rem;
+    }
+    .operator-desc {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.52);
+      line-height: 1.65;
+    }
+    .operator-desc strong {
+      color: rgba(150,180,255,0.80);
+    }
+
+    /* Continuity box */
+    .continuity-box {
+      background: rgba(34,197,94,0.06);
+      border: 1px solid rgba(34,197,94,0.22);
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      display: flex;
+      gap: 0.65rem;
+      align-items: flex-start;
+    }
+    .continuity-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .continuity-text {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.65;
+    }
+    .continuity-text strong {
+      color: rgba(134,239,172,0.80);
+    }
+
+    /* Encryption chips */
+    .enc-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+    .enc-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 100px;
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    .enc-chip-gold {
+      background: rgba(201,162,39,0.14);
+      border: 1px solid rgba(201,162,39,0.35);
+      color: rgba(201,162,39,0.88);
+    }
+    .enc-chip-green {
+      background: rgba(34,197,94,0.10);
+      border: 1px solid rgba(34,197,94,0.30);
+      color: rgba(134,239,172,0.85);
+    }
+    .enc-chip-blue {
+      background: rgba(96,165,250,0.10);
+      border: 1px solid rgba(96,165,250,0.30);
+      color: rgba(147,197,253,0.88);
+    }
+
+    /* ============================================================
+       PRINT OVERRIDES
+    ============================================================ */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      html, body {
+        background: transparent;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .print-bar { display: none !important; }
+      .pages-wrap {
+        padding: 0;
+        gap: 0;
+        background: transparent;
+      }
+      .page {
+        width: 210mm;
+        height: 297mm;
+        min-height: 297mm;
+        max-height: 297mm;
+        page-break-after: always;
+        box-shadow: none;
+        overflow: hidden;
+      }
+      .page:last-child {
+        page-break-after: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================ PRINT BAR ============================================================ -->
+<div class="print-bar">
+  <div class="print-bar-left">
+    <img src="/pannongard_shield_1788357724079.jpg" alt="PannonGuard" class="print-bar-logo" />
+    <div>
+      <div class="print-bar-title">PannonGuard Komplex</div>
+      <div class="print-bar-sub">Biztonsági &amp; Üzemeltetési Dokumentáció</div>
+    </div>
+  </div>
+  <button class="btn-print" onclick="window.print()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 9V2h12v7"/><rect x="6" y="13" width="12" height="9"/><path d="M6 18H4a2 2 0 01-2-2V10a2 2 0 012-2h16a2 2 0 012 2v6a2 2 0 01-2 2h-2"/>
+    </svg>
+    Mentés PDF-ként
+  </button>
+</div>
+
+<!-- ============================================================ PAGES WRAPPER ============================================================ -->
+<div class="pages-wrap">
+
+  <!-- =====================================================================
+       PAGE 1 — COVER
+  ====================================================================== -->
+  <div class="page">
+    <div class="page-inner">
+
+      <!-- Header -->
+      <div class="page-header">
+        <div class="page-header-left">
+          <img src="/pannongard_shield_1788357724079.jpg" alt="PannonGuard" class="header-shield" />
+          <span class="header-brand">PannonGuard Komplex</span>
+          <span class="header-tag">ISO Compliant</span>
+        </div>
+        <span class="page-num">1 / 3 · Fedőlap</span>
+      </div>
+
+      <!-- Cover body -->
+      <div class="cover-body">
+
+        <!-- Rings -->
+        <div class="cover-rings-wrap">
+          <div class="cover-ring" style="width:320px;height:320px;"></div>
+          <div class="cover-ring" style="width:480px;height:480px;"></div>
+          <div class="cover-ring" style="width:660px;height:660px;opacity:0.5;"></div>
+        </div>
+
+        <!-- Shield -->
+        <div class="cover-shield-wrap">
+          <div class="cover-glow"></div>
+          <img src="/pannongard_shield_1788357724079.jpg" alt="PannonGuard" class="cover-shield-img" />
+        </div>
+
+        <div class="cover-eyebrow">Igazgatói Tanács · 2026</div>
+
+        <h1 class="cover-title">
+          PannonGuard<br />
+          <span>Komplex</span>
+        </h1>
+        <div class="cover-subtitle">Intelligens Vállalatirányítási Rendszer</div>
+
+        <div class="gold-divider" style="max-width:300px;"></div>
+
+        <!-- Doc type -->
+        <div style="font-size:0.92rem;font-weight:700;color:rgba(255,255,255,0.72);letter-spacing:0.08em;margin-bottom:1rem;text-transform:uppercase;">
+          Biztonsági, Adatvédelmi &amp; Üzemeltetési Dokumentáció
+        </div>
+
+        <!-- Badges -->
+        <div class="cover-badges">
+          <span class="badge badge-gold">◈ ISO Compliant</span>
+          <span class="badge badge-blue">⬡ AES-256 Titkosítás</span>
+          <span class="badge badge-green">◎ GDPR Megfelelő</span>
+          <span class="badge badge-gold">◇ Zero-Trust Architektúra</span>
+          <span class="badge badge-blue">◉ MongoDB + MariaDB</span>
+        </div>
+
+        <!-- Abstract -->
+        <p class="cover-abstract">
+          Ez a dokumentum a PannonGuard Komplex vállalatirányítási rendszer biztonsági infrastruktúráját,
+          adatvédelmi megoldásait, adatbázis-architektúráját, valamint az üzemeltetési és karbantartási
+          felelősségeket foglalja össze. A rendszer a Diana Holding és Pannon Guard Zrt. saját szerverein
+          üzemel, teljes körű titkosítással és ISO-megfelelőséggel.
+        </p>
+
+        <!-- Meta cells -->
+        <div class="cover-meta-row">
+          <div class="meta-cell">
+            <div class="meta-cell-label">Kiadás éve</div>
+            <div class="meta-cell-val">2026</div>
+          </div>
+          <div class="meta-cell">
+            <div class="meta-cell-label">Szerver</div>
+            <div class="meta-cell-val">Diana Holding / Pannon Guard Zrt.</div>
+          </div>
+          <div class="meta-cell">
+            <div class="meta-cell-label">Üzemeltető</div>
+            <div class="meta-cell-val">Balog Sebastian Máté</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="page-footer">
+        <span class="footer-left">Bizalmas – Belső használatra</span>
+        <span class="footer-right">PannonGuard Zrt. · 2026</span>
+      </div>
+
+    </div>
+  </div>
+  <!-- /PAGE 1 -->
+
+  <!-- =====================================================================
+       PAGE 2 — ISO COMPLIANCE & SECURITY
+  ====================================================================== -->
+  <div class="page">
+    <div class="page-inner">
+
+      <!-- Header -->
+      <div class="page-header">
+        <div class="page-header-left">
+          <img src="/pannongard_shield_1788357724079.jpg" alt="PannonGuard" class="header-shield" />
+          <span class="header-brand">PannonGuard Komplex</span>
+          <span class="header-tag">ISO &amp; Security</span>
+        </div>
+        <span class="page-num">2 / 3 · Biztonság &amp; Megfelelőség</span>
+      </div>
+
+      <!-- Content body -->
+      <div class="content-body">
+
+        <!-- Section: ISO -->
+        <div>
+          <div class="section-eyebrow">Szabványmegfelelőség</div>
+          <div class="gold-divider-short"></div>
+          <div class="section-title">ISO Szabályok &amp; <span>Megfelelőség</span></div>
+        </div>
+
+        <div class="icon-cards">
+          <div class="icon-card">
+            <div class="icon-card-icon">🛡</div>
+            <div class="icon-card-title">ISO 27001</div>
+            <div class="icon-card-desc">Információbiztonsági irányítási rendszer – az adatok és folyamatok teljes körű védelme, kockázatkezelés, hozzáférés-szabályozás.</div>
+          </div>
+          <div class="icon-card">
+            <div class="icon-card-icon">📋</div>
+            <div class="icon-card-title">ISO 9001</div>
+            <div class="icon-card-desc">Minőségirányítási rendszer – a modulok fejlesztési és üzemeltetési folyamatai auditálható, dokumentált minőségi eljárásrend szerint zajlanak.</div>
+          </div>
+          <div class="icon-card">
+            <div class="icon-card-icon">🔒</div>
+            <div class="icon-card-title">GDPR &amp; Adatvédelem</div>
+            <div class="icon-card-desc">Minden személyes adat kezelése az EU GDPR előírásai alapján történik. Adatminimalizálás, törlési kérelmek, hozzájáruláskezelés beépítve.</div>
+          </div>
+        </div>
+
+        <div class="gold-divider"></div>
+
+        <!-- Section: Titkosítás -->
+        <div>
+          <div class="section-eyebrow">Adatvédelem</div>
+          <div class="gold-divider-short"></div>
+          <div class="section-title">Teljes körű <span>Titkosítás</span></div>
+        </div>
+
+        <div class="num-list">
+          <div class="num-item">
+            <div class="num-badge"><span>01</span></div>
+            <div class="num-content">
+              <div class="num-content-title">End-to-End titkosítás (AES-256)</div>
+              <div class="num-content-desc">Minden adat – legyen az nyugalmi állapotban (at rest) vagy átvitel közben (in transit) – AES-256 szimmetrikus titkosítással védett. Az iparágban legmagasabb szintű védelmi standard.</div>
+            </div>
+          </div>
+          <div class="num-item">
+            <div class="num-badge"><span>02</span></div>
+            <div class="num-content">
+              <div class="num-content-title">TLS 1.3 kommunikáció</div>
+              <div class="num-content-desc">A rendszer és az adatbázisok közötti összes kommunikáció TLS 1.3 protokollon keresztül zajlik, lehallgatás és man-in-the-middle támadások ellen védve.</div>
+            </div>
+          </div>
+          <div class="num-item">
+            <div class="num-badge"><span>03</span></div>
+            <div class="num-content">
+              <div class="num-content-title">Szerepkör-alapú hozzáférés (RBAC)</div>
+              <div class="num-content-desc">Minden modul és adatrekord hozzáférése egyedileg konfigurált jogosultsági szintekhez kötött. Jogosulatlan hozzáférési kísérletek automatikusan naplózásra és riasztásra kerülnek.</div>
+            </div>
+          </div>
+          <div class="num-item">
+            <div class="num-badge"><span>04</span></div>
+            <div class="num-content">
+              <div class="num-content-title">Auditnapló &amp; Verziókövetés</div>
+              <div class="num-content-desc">Minden adatmódosítás, hozzáférés és rendszeresemény időbélyeges auditnaplóban rögzítésre kerül – visszakövethetőség és megfelelőség biztosítása céljából.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <span class="highlight-icon">◈</span>
+          <span class="highlight-text">
+            <strong>Zero-Trust biztonsági modell:</strong> A rendszer a „soha ne bízz, mindig ellenőrizz" elvén alapul. Minden kérés – belső hálózatról is – hitelesítésen és jogosultság-ellenőrzésen megy keresztül. Nincs alapértelmezett megbízhatóság egyetlen felhasználó vagy eszköz számára sem.
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="page-footer">
+        <span class="footer-left">Bizalmas – Belső használatra</span>
+        <span class="footer-right">PannonGuard Zrt. · 2026</span>
+      </div>
+
+    </div>
+  </div>
+  <!-- /PAGE 2 -->
+
+  <!-- =====================================================================
+       PAGE 3 — DATABASE & OPERATOR
+  ====================================================================== -->
+  <div class="page">
+    <div class="page-inner">
+
+      <!-- Header -->
+      <div class="page-header">
+        <div class="page-header-left">
+          <img src="/pannongard_shield_1788357724079.jpg" alt="PannonGuard" class="header-shield" />
+          <span class="header-brand">PannonGuard Komplex</span>
+          <span class="header-tag">Infrastruktúra</span>
+        </div>
+        <span class="page-num">3 / 3 · Adatbázis &amp; Üzemeltetés</span>
+      </div>
+
+      <!-- Content body -->
+      <div class="content-body">
+
+        <!-- Section: DB -->
+        <div>
+          <div class="section-eyebrow">Adattárolás</div>
+          <div class="gold-divider-short"></div>
+          <div class="section-title">Adatbázis <span>Architektúra</span></div>
+        </div>
+
+        <!-- DB diagram -->
+        <div class="db-arch">
+          <div class="db-box db-box-mongo">
+            <div class="db-box-icon">🍃</div>
+            <div class="db-box-name">MongoDB</div>
+            <div class="db-box-type">NoSQL · Dokumentum-alapú</div>
+            <div class="db-box-desc">Strukturálatlan &amp; szemidokumentum adatok – modulkonfigurációk, MI-interakciók, napló-rekordok, riportok, rugalmas sémakezeléssel.</div>
+          </div>
+          <div class="db-connector">
+            <div class="db-connector-line"></div>
+            <div class="db-connector-dot"></div>
+            <div style="font-size:0.6rem;color:rgba(201,162,39,0.55);letter-spacing:0.1em;text-transform:uppercase;font-weight:700;writing-mode:horizontal-tb;text-align:center;margin:3px 0;">+</div>
+            <div class="db-connector-dot"></div>
+            <div class="db-connector-line"></div>
+          </div>
+          <div class="db-box db-box-maria">
+            <div class="db-box-icon">🐬</div>
+            <div class="db-box-name">MariaDB</div>
+            <div class="db-box-type">Relációs SQL · ACID-kompatibilis</div>
+            <div class="db-box-desc">Strukturált tranzakcionális adatok – pénzügyi kimutatások, jogosultságok, HR-rekordok, szerződések, közbeszerzési adatok.</div>
+          </div>
+        </div>
+
+        <!-- Encryption chips -->
+        <div>
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.40);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.4rem;font-weight:600;">Adatbázis-szintű védelem</div>
+          <div class="enc-chips">
+            <span class="enc-chip enc-chip-gold">🔑 AES-256 at rest</span>
+            <span class="enc-chip enc-chip-blue">🔐 TLS 1.3 in transit</span>
+            <span class="enc-chip enc-chip-green">✓ Napi backup</span>
+            <span class="enc-chip enc-chip-gold">🛡 IP whitelisting</span>
+            <span class="enc-chip enc-chip-green">✓ Point-in-time recovery</span>
+            <span class="enc-chip enc-chip-blue">⚡ Automatikus failover</span>
+          </div>
+        </div>
+
+        <!-- Server box -->
+        <div>
+          <div class="section-eyebrow" style="margin-bottom:0.4rem;">Szerver infrastruktúra</div>
+          <div class="server-box">
+            <span class="server-box-icon">🏢</span>
+            <div class="server-box-content">
+              <div class="server-box-title">Diana Holding – Pannon Guard Zrt. Dedikált Szerver</div>
+              <div class="server-box-desc">
+                A PannonGuard Komplex kizárólag a <strong>Diana Holding</strong> csoporthoz tartozó
+                <strong>Pannon Guard Zrt.</strong> saját, dedikált fizikai szerverein üzemel.
+                Nincs külső felhőszolgáltatóra való adatátvitel – minden adat a vállalat
+                infrastruktúrájában marad, teljes körű fizikai és logikai szeparációval,
+                tűzfalvédelemmel és behatolás-érzékelő rendszerrel (IDS/IPS) ellátva.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gold-divider"></div>
+
+        <!-- Section: Üzemeltetés -->
+        <div>
+          <div class="section-eyebrow">Üzemeltetés &amp; Karbantartás</div>
+          <div class="gold-divider-short"></div>
+          <div class="section-title">Üzemeltetői <span>Felelősség</span></div>
+        </div>
+
+        <!-- Operator card -->
+        <div class="operator-card">
+          <div class="operator-avatar">✦</div>
+          <div>
+            <div class="operator-name">Balog Sebastian Máté</div>
+            <div class="operator-role">Rendszerüzemeltető &amp; Karbantartó · PannonGuard Zrt.</div>
+            <div class="operator-desc">
+              A PannonGuard Komplex rendszer elsődleges üzemeltetési és karbantartási felelőse
+              <strong>Balog Sebastian Máté</strong>, a PannonGuard Zrt. munkatársa. Felelősségi köre kiterjed
+              a szerver- és adatbázis-felügyeletre, a biztonsági frissítésekre, a hozzáférés-kezelésre,
+              az incidensek elhárítására, valamint az ISO-megfelelőségi auditokra. A rendszer
+              az ő foglalkoztatásának időtartama alatt az ő felügyelete alatt működik.
+            </div>
+          </div>
+        </div>
+
+        <!-- Continuity -->
+        <div class="continuity-box">
+          <span class="continuity-icon">♻</span>
+          <div class="continuity-text">
+            <strong>Üzemeltetői folytonosság garantált:</strong> A rendszer teljes körű technikai dokumentációval,
+            üzemeltetési kézikönyvvel és verziókövetett kódbázissal rendelkezik. Amennyiben Balog Sebastian Máté
+            elhagyja a szervezetet, a rendszer – a dokumentáció és a strukturált átadás-átvételi folyamat révén –
+            <strong>zökkenőmentesen karban tartható</strong> és tovább üzemeltethető egy kijelölt utód
+            vagy külső szakember által is.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="page-footer">
+        <span class="footer-left">Bizalmas – Belső használatra</span>
+        <span class="footer-right">PannonGuard Zrt. · 2026</span>
+      </div>
+
+    </div>
+  </div>
+  <!-- /PAGE 3 -->
+
+</div>
+<!-- /PAGES WRAPPER -->
+
+</body>
+</html>

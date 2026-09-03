@@ -19,7 +19,8 @@ const slides = [
       "Pályázati anyagok összeállítása során nagyobb mértékű átláthatóság",
       "Adatbázisok feldolgozásának gyorsítása, adatbázisokból ábrák készítése",
       "Idegen nyelvű okiratok fordítása",
-      "Pénzügyi mutatók elemzése, oktatási segédanyagok készítése",
+      "Pénzügyi mutatók elemzése",
+      "Oktatási segédanyagok készítése",
       "Jogszabályok változásának nyomon követése",
       "Közbeszerzési eljárás során árindoklások elkészítése",
     ],
@@ -904,7 +905,7 @@ function ClosingSlide() {
 // ===================== ARCHITECTURE SLIDE =====================
 function ArchitectureSlide() {
   const departments = [
-    "Pályázati osztály", "Belső ellenőrzés", "Objektumfelügyelet",
+    "Szervezetirányítás", "Belső ellenőrzés", "Objektumfelügyelet",
     "Rendezvények", "HR", "Ügyvitel", "Logisztika",
     "Gazdasági osztály", "Technikai osztály", "IT Biztonság",
   ];
